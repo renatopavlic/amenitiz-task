@@ -10,7 +10,6 @@ export interface PlayerProfile {
   joined: number;
   last_online: number;
   league?: string;
-  location?: string;
   name?: string;
   player_id: number;
   status: string;
