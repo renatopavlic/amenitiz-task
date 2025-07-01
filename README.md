@@ -35,7 +35,7 @@ A React + TypeScript app showcasing a list of Chess.com Grandmasters with detail
 1. Clone the repository:
 
    ```bash
-   git clone [https://github.com/renatopavlic/amenitiz-task.git]
+   git clone https://github.com/renatopavlic/amenitiz-task.git
    cd amenitiz-task
    yarn
    yarn dev
