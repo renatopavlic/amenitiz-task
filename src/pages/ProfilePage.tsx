@@ -3,6 +3,7 @@ import { formatUnixTimestampToDate } from '../utils/date';
 import { getCountryCode } from '../utils/countryCode';
 import SkeletonProfile from '../components/SkeletonProfile';
 import { useGrandmasterProfile } from '../hooks/useGrandmasterProfile';
+import TimeTicker from '../components/TimeTicker';
 
 const ProfilePage = () => {
   const { username } = useParams();
@@ -42,6 +43,7 @@ const ProfilePage = () => {
             <h1 className="font-bold text-sm">
               <span className="font-light text-gray-300 pr-2">Last Online</span>
               {formatUnixTimestampToDate(profile.last_online)}
+              <TimeTicker timestamp={profile.last_online} />
             </h1>
           </div>
         </div>
