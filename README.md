@@ -27,7 +27,7 @@ A React + TypeScript app showcasing a list of Chess.com Grandmasters with detail
 
 ### Prerequisites
 
-- Node.js (v20 or above required)
+- Node.js (v20.19.3 or above required)
 - Yarn package manager (if not installed, get it [here](https://classic.yarnpkg.com/en/docs/install))
 
 ### Installation
