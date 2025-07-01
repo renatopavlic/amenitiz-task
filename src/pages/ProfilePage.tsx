@@ -1,33 +1,12 @@
-import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { getGrandmasterProfile } from '../services/chessApi';
-import type { PlayerProfile } from '../types/players';
 import { formatUnixTimestampToDate } from '../utils/date';
 import { getCountryCode } from '../utils/countryCode';
 import SkeletonProfile from '../components/SkeletonProfile';
+import { useGrandmasterProfile } from '../hooks/useGrandmasterProfile';
 
 const ProfilePage = () => {
   const { username } = useParams();
-  const [profile, setProfile] = useState<PlayerProfile | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPlayerProfile = async () => {
-      try {
-        const data = await getGrandmasterProfile(username!);
-        setProfile(data);
-        console.log('profile data: ', data);
-      } catch (e) {
-        console.error(e);
-        setError('Error fetching players');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPlayerProfile();
-  }, [username]);
+  const { profile, isLoading, error } = useGrandmasterProfile(username);
 
   if (isLoading) return <SkeletonProfile />;
   if (error) return <p>{error}</p>;
@@ -37,7 +16,13 @@ const ProfilePage = () => {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-6 bg-neutral-800 p-6">
-        <img src={profile.avatar} alt={profile.name} className="w-40 h-40" />
+        <img
+          src={profile.avatar}
+          alt={profile.name}
+          className="w-40 h-40"
+          loading="lazy"
+          decoding="async"
+        />
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-4">
             <span className="bg-rose-900 px-1">{profile.title}</span>

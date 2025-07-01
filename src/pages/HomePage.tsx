@@ -1,47 +1,63 @@
-import { useEffect, useState } from 'react';
-import { getGrandmasterPlayers } from '../services/chessApi';
-import { Link } from 'react-router';
+import { useCallback, useRef, useState } from 'react';
+import { useGrandmasters } from '../hooks/useGrandmasters';
 import SkeletonGrandmasterList from '../components/SkeletonGrandmasterList';
+import GrandmasterRow from '../components/GrandmasterRow';
+
+const SLICE_SIZE = 20;
 
 const HomePage = () => {
-  const [players, setPlayers] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { players, isLoading, error } = useGrandmasters();
+  const [visibleCount, setVisibleCount] = useState(SLICE_SIZE);
+  const observer = useRef<IntersectionObserver | null>(null);
 
-  useEffect(() => {
-    const fetchPlayers = async () => {
-      try {
-        const data = await getGrandmasterPlayers();
-        setPlayers(data.players);
-      } catch (e) {
-        console.error(e);
-        setError('Error fetching players');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const lastPlayerRef = useCallback(
+    (node: HTMLAnchorElement | null) => {
+      if (isLoading) return;
+      if (observer.current) observer.current.disconnect();
 
-    fetchPlayers();
-  }, []);
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && visibleCount < players.length) {
+          setVisibleCount((prevCount) => {
+            const nextCount = prevCount + SLICE_SIZE;
+            const maxCount = players.length;
+            return nextCount > maxCount ? maxCount : nextCount;
+          });
+        }
+      });
 
-  if (isLoading) return <SkeletonGrandmasterList />;
-  if (error) return <p>{error}</p>;
+      if (node) observer.current.observe(node);
+    },
+    [isLoading, visibleCount, players.length]
+  );
+
+  const visiblePlayers = players.slice(0, visibleCount);
 
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-3xl font-bold text-gray-300">Grandmaster List</h1>
-      <div className="flex flex-col gap-6">
-        {players.map((name, index) => (
-          <Link
-            to={`/profile/${name}`}
-            className="bg-neutral-800 rounded-2xl px-6 py-4 hover:bg-neutral-700 transition duration-200"
-          >
-            <p className="font-bold">
-              {index + 1}. {name}
-            </p>
-          </Link>
-        ))}
-      </div>
+
+      {error && <p>{error}</p>}
+
+      {isLoading ? (
+        <SkeletonGrandmasterList />
+      ) : (
+        <div className="flex flex-col gap-6">
+          {visiblePlayers.map((name, index) => {
+            const isLast = index === visiblePlayers.length - 1;
+            return (
+              <GrandmasterRow
+                key={name}
+                name={name}
+                index={index}
+                ref={isLast ? lastPlayerRef : undefined}
+              />
+            );
+          })}
+          {visibleCount < players.length && (
+            <p className="text-center text-sm text-gray-400">Loading more...</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };
