@@ -1,9 +1,10 @@
 import { useParams } from 'react-router';
+
 import { formatUnixTimestampToDate } from '../utils/date';
 import { getCountryCode } from '../utils/countryCode';
 import SkeletonProfile from '../components/SkeletonProfile';
-import { useGrandmasterProfile } from '../hooks/useGrandmasterProfile';
 import TimeTicker from '../components/TimeTicker';
+import { useGrandmasterProfile } from '../hooks/useGrandmasterProfile';
 
 const ProfilePage = () => {
   const { username } = useParams();

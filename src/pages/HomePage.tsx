@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
+
 import { useGrandmasters } from '../hooks/useGrandmasters';
 import SkeletonGrandmasterList from '../components/SkeletonGrandmasterList';
 import GrandmasterRow from '../components/GrandmasterRow';
@@ -12,7 +13,9 @@ const HomePage = () => {
 
   const lastPlayerRef = useCallback(
     (node: HTMLAnchorElement | null) => {
-      if (isLoading) return;
+      if (isLoading) {
+        return;
+      }
       if (observer.current) observer.current.disconnect();
 
       observer.current = new IntersectionObserver((entries) => {
